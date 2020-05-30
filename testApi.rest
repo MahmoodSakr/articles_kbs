@@ -1,0 +1,32 @@
+Get http://localhost:3000/articles
+###
+
+Get http://localhost:3000/articles/first title
+###
+POST http://localhost:3000/articles/add
+Content-Type: application/json
+
+{
+    "title":"first title",
+    "author":"Mahmoud Sakr",
+    "body":"first body"
+}
+
+###
+DELETE  http://localhost:3000/articles/delete
+Content-Type: application/json
+
+{
+    "title":"first title",
+    "author":"Mahmoud Sakr",
+    "body":"first body"
+}
+###
+PATCH   http://localhost:3000/articles/update
+Content-Type: application/json
+
+{
+    "title":"first title",
+    "author":"Ali Sakr",
+    "body":"first body"
+}

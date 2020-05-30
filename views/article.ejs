@@ -1,0 +1,83 @@
+<html>
+
+<head>
+    <title>Article</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js"></script>
+    <script src="/js/deleteScripts.js"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/articles">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/articles/add">Add Article</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/about.html">About</a>
+                </li>
+            </ul>
+
+        </div>
+        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+            <ul class="navbar-nav ml-auto">
+                <% if (user) { %>
+                <li class="nav-item">
+                    <a class="nav-link" href="/users/logout">Logout</a>
+                </li>
+                <% } else { %>
+                <li class="nav-item">
+                    <a class="nav-link" href="/users/registration">Register</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/users/login">Login</a>
+                </li>
+                <% } %>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container" style="padding: 25px 50px 75px 0px;">
+        <%  if(founded){%>
+        <h2>Title is : <%= article.title %> </h2>
+        <ul class="list-group">
+            <li class="list-group-item"> Author: <%= authorName %> </li>
+            <li class="list-group-item">Body: <%= article.body %> </li>
+        </ul>
+        <% if(user){ %>
+        <% if(user._id==article.authorId){  %>
+        <br>
+        <a class="btn btn-info" id="update-btn" href="/articles/update/<%= article._id %>">
+            Update
+        </a>
+        <button class="btn btn-danger" id="delete-btn" data-id="<%= article._id %>">
+            Delete
+        </button>
+        <%   }else{  %>
+        <br>
+        <h3 style="color: red;"> Login with the author user to update and delete this article </h3>
+        <%    }  %>
+        <%     }else{ %>
+        <br>
+        <h3 style="color: red;"> You must Login to add and edit an article </h3>
+        <%  } %>
+        <%      }else{ %>
+        <h2 style="color: red;">Sorry, this article is not found</h2><br>
+        <h3> You can add a new article from <a href="/articles/add">here</a></h3>
+        <%   } %>
+        <hr color="#000000">
+        <strong>Copyright &COPY; 2020</strong>
+    </div>
+
+</body>
+
+</html>
