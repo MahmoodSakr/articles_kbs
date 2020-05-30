@@ -79,7 +79,7 @@ db.on("error", (err) => {
 
 // Home Route
 app.get("/", function (req, res) {
-  res.render("articles");
+  res.redirect("/articles");
 });
 // Home Route
 app.get("/about", function (req, res) {
