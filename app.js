@@ -43,10 +43,10 @@ require("./config/passport")(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Make a global var : to be used in any frontend and backend or js file along with the lifetime of the express app
+// Create a global var : to be used in any frontend and backend or js file along with the lifetime of the express app
 app.get("*", (req, res, next) => {
   res.locals.user = req.user || null; // obtained from the passport middle ware
-  global.ttt = "any Value";
+  global.ttt = "any Value"; // a nother way to create a global variables
   next();
 });
 
@@ -57,16 +57,17 @@ app.get("*", (req, res, next) => {
 // });
 
 // Make a connection to DB server
-const DB_url =
-  "mongodb+srv://sakr:root@firstcluster-n7gej.mongodb.net/test?retryWrites=true&w=majority";
-mongoose.connect(DB_url, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-// mongoose.connect(process.env.DB_Url, {
+// const DbURl =
+//   "mongodb+srv://sakr:root@firstcluster-n7gej.mongodb.net/test?retryWrites=true&w=majority";
+// mongoose.connect(DbURl, {
 //   useNewUrlParser: true,
 //   useUnifiedTopology: true,
 // });
+// DbURl is setted in the heroko configuration values
+mongoose.connect(process.env.DbURl, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 // check for the connection status
 db = mongoose.connection;
