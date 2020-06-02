@@ -1,9 +1,9 @@
 const express = require("express");
 router = express.Router();
-// Express Validator Middleware
+// Express Validator Middleware -- to validate the form body params
 const { check, validationResult, body } = require("express-validator");
-const articles = require("../models/articles");
-const users = require("../models/users");
+const articles = require("../models/articles"); // The article model to be used as the articles collection
+const users = require("../models/users"); // The users model to be used as the users collection
 
 function checkArticle(req, res, next) {
   articles.findById(req.params.id, (error, article) => {
@@ -16,18 +16,7 @@ function checkArticle(req, res, next) {
   });
 }
 
-// Access control on the routes / to protect a route
-
-// router.get("*", (req, res, next) => {
-//   if (req.user == null) {
-//     req.flash("danger", "You must sign in firstly !");
-//     return res.redirect("/users/login");
-//   } else {
-//     return next();
-//   }
-// });
-
-// or by a Middle ware
+// Access control on the routes / to protect a route // if the user is login the route will be available to be used
 function ensureAuthenticate(req, res, next) {
   if (req.isAuthenticated()) {
     //== if(req.user!=null)

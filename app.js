@@ -13,14 +13,11 @@ const app = express();
 app.set("views", path.join(__dirname, "views")); // optional
 app.set("view engine", "ejs");
 
+// Middlewares Functions
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-// set Public folder
-// use this file  for the public assets like js, css , imgs files
-app.use(express.static(path.join(__dirname, "public")));
-
-// Express Session Middleware
+app.use(express.static(path.join(__dirname, "public"))); // use this public folder for the public assets usage like js, css , imgs files
+// To enable the usage of the flash message, we use two middle ware the express session and connect flash
 app.use(
   session({
     secret: "keyboard cat",
@@ -28,30 +25,28 @@ app.use(
     saveUninitialized: true,
   })
 );
-
-// Express Messages Middleware
 app.use(require("connect-flash")());
 app.use(function (req, res, next) {
   res.locals.messages = require("express-messages")(req, res);
   next();
 });
 
-// Passport config -Importing file-
-require("./config/passport")(passport);
-
+// To enable the usage of the passport strategy
+require("./config/passport")(passport); // Passport config -Importing file
 // Passport middlewares
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Create a global var : to be used in any frontend and backend or js file along with the lifetime of the express app
+// Create a local var : to be used in any frontend and backend or js file along with the lifetime of the express app
 app.get("*", (req, res, next) => {
   res.locals.user = req.user || null; // obtained from the passport middle ware
-  global.ttt = "any Value"; // a nother way to create a global variables
+  // the variable res.locals.user is used as user only in the ejs template files and as req.user in all backend js files
+  //global.ttt = "any Value"; // another way to create a global variables
   next();
 });
-
+// Or by using this middleware which will be executed automatically with every req
 // app.use(function (req, res, next) {
-//   res.locals.user = req.user || null; // obtained from the passport middle ware
+//   res.locals.user = req.user || null; // obtained the user global value from the passport middle ware
 //   global.ttt = "any Value";
 //   next();
 // });
@@ -88,7 +83,7 @@ app.get("/about", function (req, res) {
 });
 
 app.post("/about", function (req, res) {
-  req.flash("success", "Thanks for your message");
+  req.flash("success", "Thanks for your message"); // to be shown in the articles.js
   res.redirect("/articles");
 });
 
