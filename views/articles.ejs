@@ -19,7 +19,7 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="/articles">Home</a>
                 </li>
-                <% if (user) { %>
+                <% if (user!=null) { %>
                 <li class="nav-item">
                     <a class="nav-link" href="/articles/add">Add Article</a>
                 </li>
@@ -31,7 +31,7 @@
         </div>
         <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
             <ul class="navbar-nav ml-auto">
-                <% if (user) { %>
+                <% if (user!=null) { %>
                 <li class="nav-item">
                     <a class="nav-link" href="/users/logout">Logout</a>
                 </li>
@@ -55,16 +55,19 @@
         <% if (articlesResults.length>0) { %>
         <ul class="list-group">
             <% articlesResults.forEach(function(article){ %>
-            <li class="list-group-item"> <a href="/articles/<%=article.id %>"> <%= article.title %> </a> </li>
+            <li class="list-group-item">
+                <a href="/articles/<%=article.id %>"> <%= article.title %> </a>
+            </li>
             <% }) %>
         </ul>
         <% } else { %>
         <h3>No articles are founded</h3>
+        <% } %>
+        <%  if(user==null){  %>
+        <br>
+        <h4 style="color: red;">To add an article, <b>you should login firstly</b></h4>
+        <% } %>
 
-        <%  if(!user){  %>
-        <h3 style="color: red;">To add an article, you should login</h3>
-        <% } %>
-        <% } %>
         <hr color="#000000">
         <strong>Copyright &COPY; 2020</strong>
     </div>

@@ -1,77 +1,92 @@
 const express = require("express");
 router = express.Router();
-// Express Validator Middleware -- to validate the form body params
-const { check, validationResult, body } = require("express-validator");
 const articles = require("../models/articles"); // The article model to be used as the articles collection
 const users = require("../models/users"); // The users model to be used as the users collection
+// Express Validator Middleware -- to validate the form body params
+const { check, validationResult, body } = require("express-validator");
 
 function checkArticle(req, res, next) {
   articles.findById(req.params.id, (error, article) => {
     if (error) {
+      // instead of catch if your handle it as a promise
       return res.status(500).json({ message: error.message }); // server error
     } else {
+      // add a flag variable called founded in the req object to be used in the next middleware
       req.founded = article == null ? false : article; // existed or not
       next();
     }
   });
 }
 
-// Access control on the routes / to protect a route // if the user is login the route will be available to be used
+// Access control on the routes that required login firstly / to protect a route // if the user is login the route will be available to be used
 function ensureAuthenticate(req, res, next) {
+  // Whether the user who request this api is authenticated/logined ot not
   if (req.isAuthenticated()) {
     //== if(req.user!=null)
-    return next(); // keep going
+    return next(); // keep going to the protected route
   } else {
     req.flash("danger", "You must sign in firstly !");
     return res.redirect("/users/login");
   }
 }
 
-router.delete("/delete", ensureAuthenticate, async (req, res) => {
-  // This request comes from ajax
+router.delete("/delete", async (req, res) => {
+  // This request comes from ajax, so you must handle the res manually and don't include and redirect
+  // as the ajax make the redirect after the response return with failed.
+
+  // Case A: Whether the user is login firstly
+  if (req.user._id == null) {
+    return res.status(403).json({
+      message: "Forbidden deletion process, please login firstly",
+    });
+  }
   try {
-    // Whether the user is login
-    if (!req.user._id) {
-      return res.status(401).json({
-        message: "Forbidden deletion process, please login firstly",
-      });
-    }
+    // Case B: Whether this article is existed or not
     article = await articles.findById(req.body.id);
     if (article == null) {
-      return res.status(401).json({
+      return res.status(404).json({
         message: "No article is founded to be deleted",
       });
     }
-    if (article.authorId == req.user._id) {
-      return res.status(401).json({
-        message: "This user is not authorized to delete this article",
+    // Case C: Article is founded but whether the deleting user is the same owner user
+    if (article.authorId != req.user._id) {
+      return res.status(403).json({
+        message:
+          "This user is not the article's owner, so he is not authorized to delete this article",
       });
     }
-
+    // All the precautious are safety, you can delete the article safely.
     deletedResult = await articles.deleteMany({ _id: req.body.id });
-    if (deletedResult.deletedCount > 0) {
-      console.log("Deleted is done with count: " + deletedResult.deletedCount);
-      req.flash("danger", "Article has been deleted");
-      res.status(200).json({ message: "deleted is done" }); // send as the response of the ajax , ajax will redirect to the /
+    // if(deletedResult.deletedCount > 0){
+    if (deletedResult != null) {
+      console.log("Deletion is done with count: " + deletedResult.deletedCount);
+      req.flash(
+        "danger",
+        deletedResult.deletedCount + " Article has been deleted"
+      );
+      res.sendStatus(200);
     } else {
-      res.status(500).json({ message: "Article is founded but not deleted" });
+      res.status(500).json({ message: "Article is existed but not deleted" });
     }
   } catch (error) {
     res.status(500).json({
-      message: "An error is occurred: " + error.message,
+      message: "An error is caught: " + error.message,
     });
   }
 });
 
 router.get("/update/:id", ensureAuthenticate, (req, res) => {
+  // Case A : Whether article is existed
   articles.findById(req.params.id, (error, article) => {
     if (error) {
       return res.status(500).send(error.message);
     }
+    // Article is not founded
     if (article == null) {
       req.flash("danger", "This article is not founded to be updated");
       return res.redirect("/users/login");
     }
+    // Case B : whether the updating user is the same owner user
     if (article.authorId != req.user._id) {
       req.flash(
         "danger",
@@ -79,13 +94,15 @@ router.get("/update/:id", ensureAuthenticate, (req, res) => {
       );
       return res.redirect("/users/login");
     }
-    res.render("update_article.ejs", {
+    // All the precautious are safety, you can update the article safely
+    res.render("update_article", {
       title: "Update Article",
       article: article,
     });
   });
 });
 
+// invoked by an ajax request
 router.patch(
   "/update",
   ensureAuthenticate,
@@ -95,7 +112,7 @@ router.patch(
       .isEmpty()
       .not()
       .isDecimal(),
-    check("body", "Article Body must not be decimal or empty")
+    check("body", "Article body must not be decimal or empty")
       .not()
       .isEmpty()
       .not()
@@ -122,11 +139,12 @@ router.patch(
           },
         }
       );
+      // We maked sure that the article is already founded as shown above
       if (updatedResult.nModified > 0) {
         //update is done
         req.flash("success", "Article is updated successfully"); // Add message to be showed
-        // res.redirect("/articles");
-        res.status(201).json({ message: "Update is successes" });
+        // res.redirect("/articles"); // the redirect will be made from the ajax
+        res.sendStatus(201);
       } else {
         res.status(500).json({
           message:
@@ -139,7 +157,7 @@ router.patch(
   }
 );
 
-// Validation the req body coming from the add / insert article form
+// This will be requested from an ajax
 router.post(
   "/add",
   ensureAuthenticate,
@@ -161,12 +179,13 @@ router.post(
       .isDecimal(),
   ],
   async (req, res) => {
-    // Finds the validation errors in this request and wraps them in an object with handy functions
+    // Case 1 : checks for the form validation
     const errors = validationResult(req);
     console.log("Validation errors : ", errors);
     if (!errors.isEmpty()) {
       return res.status(421).json(errors.array()); // handle it in  ajax response in the front end
     }
+    // Create a new article in the DB model
     try {
       // article = new articles(req.body);
       // because of schema the _id will be ignored but it still included in the req body
@@ -174,11 +193,14 @@ router.post(
       article.title = req.body.title;
       article.authorId = req.user._id; // the login user will be the owner of the book
       article.body = req.body.body;
-      saved_article = await article.save();
-      console.log("New article has been added: ", saved_article);
+      saved_article = await article.save(); // create this document obj in the Db
+      if (saved_article == null) {
+        return res
+          .status(500)
+          .json({ message: "Error is occurred during saving the article" });
+      }
       req.flash("success", "Article has been added successfully"); // Add message to be showed in the /article
-      res.status(201).send("Article has been added successfully"); // will send to the ajax to redirect the page to /
-      // res.status(201).json(saved_article);
+      res.sendStatus(201); // will send to the ajax to redirect the page to /
     } catch (error) {
       // will be thrown when the required element come without data
       res.status(500).json({ message: error.message });
@@ -189,6 +211,8 @@ router.post(
 router.get("/", async (req, res) => {
   // res.render("articles.ejs", { title: "Articles " });
   try {
+    // get all the articles documents as an array
+    // if the model is empty, the array length = 0
     articlesResults = await articles.find();
     if (articlesResults.length > 0) {
       console.log("There are : " + articlesResults.length, " articles");
@@ -205,30 +229,37 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/add", ensureAuthenticate, (req, res) => {
-  res.render("add_article.ejs", { title: "Add An Article" });
+  res.render("add_article", { title: "Add An Article" });
 });
 
 router.get("/:id", async (req, res) => {
   try {
     article = await articles.findById(req.params.id);
-    console.log("article: ", article);
+    // Case A: Whether this article is found
     if (article != null) {
-      // res.status(200).json(articlesResult);
+      // res.status(200).json(article);
+      // Get the article owner
       user = await users.findById(article.authorId);
+      // Case B : Whether the owner user is founded
+      // The owner user is existed
       if (user != null) {
         res.render("article", {
           founded: true,
           article: article,
           authorName: user.fullname,
         });
-      } else {
+      }
+      // The owner user is not existed
+      else {
         res.render("article", {
           founded: true,
           article: article,
           authorName: "Author was deleted",
         });
       }
-    } else {
+    }
+    // Case c: article is not founded
+    else {
       res.render("article.ejs", { founded: false });
       // res.status(404).json({ mess: "Sorry, no data is founded" });
     }

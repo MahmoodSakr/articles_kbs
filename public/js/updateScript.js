@@ -15,7 +15,7 @@ $("document").ready(function () {
           success: function (response) {
             console.log(response);
             $("#error-group").css("display", "none");
-            window.location.href = "/articles";
+            window.location.href = "/articles"; // redirect is made here
           },
           error: function (response) {
             $("#error-group").css("display", "block");

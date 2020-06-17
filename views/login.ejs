@@ -16,7 +16,7 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="/articles">Home</a>
                 </li>
-                <% if (user) { %>
+                <% if (user!=null) { %>
                 <li class="nav-item">
                     <a class="nav-link" href="/articles/add">Add Article</a>
                 </li>
@@ -38,7 +38,7 @@
         </div>
     </nav>
 
-    <!-- Call the message template -->
+    <!-- Call the message template view -->
     <%-messages('message2', locals) %>
 
     <div class="container" style="padding: 25px 50px 75px 0px ;">

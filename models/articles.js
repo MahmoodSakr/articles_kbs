@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+// instantiate the schema object
 articleSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -13,5 +14,5 @@ articleSchema = new mongoose.Schema({
     required: true,
   },
 });
-
+// Export the model where its name and schema are below
 module.exports = mongoose.model("articles", articleSchema);

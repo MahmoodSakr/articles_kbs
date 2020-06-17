@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Simple Knowledge base build on the Node.js">
-    <meta name="author" content="Mahmoud Sakr">
+    <meta name="description" content="Simple Knowledge system base build on the Node.js">
+    <meta name="author" content="Mahmood Sakr">
     <title>About</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/about.css">
@@ -23,7 +23,7 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="/articles">Home</a>
                 </li>
-                <% if (user) { %>
+                <% if (user!=null) { %>
                 <li class="nav-item">
                     <a class="nav-link" href="/articles/add">Add Article</a>
                 </li>
@@ -37,7 +37,7 @@
         <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
             <ul class="navbar-nav ml-auto">
                 <!-- <user is a global variable from req.user> -->
-                <% if (user) { %>
+                <% if (user!=null) { %>
                 <li class="nav-item">
                     <a class="nav-link" href="/users/logout">Logout</a>
                 </li>
@@ -53,8 +53,8 @@
         </div>
     </nav>
 
-    <!-- Call the message template -->
-    <%-messages('message', locals) %>
+    <!-- Call the message.ejs view template and get the flash messaged to be viewed here once this file is rendered -->
+    <%- messages('message', locals) %>
 
 
     <div class="container contact">
@@ -67,32 +67,25 @@
                 </div>
             </div>
             <div class="col-md-9">
-                <form class="contact-form" method="POST" action="/about">
+                <form class="contact-form" method="POST" action="/sendEmail">
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="fname">First Name:</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="fname" placeholder="Enter First Name"
-                                name="fname">
+                            <input type="text" class="form-control" id="fname" name="fname"
+                                placeholder="Enter First Name">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="lname">Last Name:</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="lname" placeholder="Enter Last Name"
-                                name="lname">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-2" for="email">Email:</label>
-                        <div class="col-sm-10">
-                            <input type="email" class="form-control" id="email" placeholder="Enter email" name="email"
-                                required>
+                            <input type="text" class="form-control" id="lname" name="lname"
+                                placeholder="Enter Last Name">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="comment">Comment:</label>
                         <div class="col-sm-10">
-                            <textarea class="form-control" rows="5" id="comment" required></textarea>
+                            <textarea class="form-control" rows="5" id="comment" name="comment" required></textarea>
                         </div>
                     </div>
                     <div class="form-group">

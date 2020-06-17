@@ -5,13 +5,13 @@ $(document).ready(function () {
       url: "/articles/add",
       data: {
         title: $("#title").val(),
-        author: $("#author").val(),
+        author: $("#autshor").val(),
         body: $("#body").val(),
       },
       success: function (response) {
         $("#error-group").hide();
         console.log(response);
-        window.location.href = "/articles";
+        window.location.href = "/articles"; // redirect from here
       },
       error: function (response) {
         $("#error-group").show();

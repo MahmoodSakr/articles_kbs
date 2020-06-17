@@ -19,9 +19,11 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="/articles">Home</a>
                 </li>
+                <% if (user!=null) { %>
                 <li class="nav-item">
                     <a class="nav-link" href="/articles/add">Add Article</a>
                 </li>
+                <% } %>
                 <li class="nav-item">
                     <a class="nav-link" href="/about.html">About</a>
                 </li>
@@ -30,7 +32,7 @@
         </div>
         <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
             <ul class="navbar-nav ml-auto">
-                <% if (user) { %>
+                <% if (user!=null) { %>
                 <li class="nav-item">
                     <a class="nav-link" href="/users/logout">Logout</a>
                 </li>
