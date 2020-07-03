@@ -65,7 +65,8 @@ function Db_connection_from_heroku() {
     useUnifiedTopology: true,
   });
 }
-Db_connection_from_localhost();
+// Db_connection_from_localhost()
+Db_connection_from_heroku();
 // check for the connection status with the following two events on the connection object
 db_connection = mongoose.connection;
 db_connection.once("open", () => {
