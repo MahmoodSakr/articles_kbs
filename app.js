@@ -11,6 +11,7 @@ const ejs = require("ejs");
 const { check, validationResult } = require("express-validator");
 const articlesRouterFile = require("./routes/articles");
 const usersRouterFile = require("./routes/users");
+const moment = require("moment");
 // require("dotenv").config();
 
 // inti web application
@@ -18,17 +19,44 @@ const app = express();
 
 //Assign a value to a setting variables e.g.
 // load view engine
-app.set("views", path.join(__dirname, "views")); // optional
 app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views")); // optional
 console.log("The default view engine is : ", app.get("view engine"));
 
-// Variety of Middlewares Functions
-
+//----------Middlewares Functions----------------
 // Enable parsing any json object from any req
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 // use this public folder for the public assets usage like js, css , imgs files and handle any request to any html pages included in it
 app.use(express.static(path.join(__dirname, "public")));
+
+// to use the mongoose db , and make a connection to DB server
+const url = "mongodb://localhost:27017/localDb";
+const DbURl =
+  "mongodb+srv://sakr:root@firstcluster-n7gej.mongodb.net/test?retryWrites=true&w=majority";
+mongoose.connect(url, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+// DbURl is set in the heroku configuration values - process.env.keys ... the keys stored in the heroku system
+/*
+mongoose.connect(process.env.DbURl, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+*/
+// check for the connection status with the following two events on the connection object
+db_connection = mongoose.connection;
+db_connection.once("open", () => {
+  console.log("Db is connected successfully ...");
+});
+db_connection.on("error", (err) => {
+  console.error(
+    "Error is occurred during the db connection with mess: ",
+    err.message
+  );
+});
 
 // To enable the usage of the flash message req.flash('type',"message")
 // We use three middlewares the express session + connect flash + manual middle ware to create a message local var
@@ -48,55 +76,34 @@ app.use(function (req, res, next) {
 // To use the passport strategy, use the next 2 middlewares then call the localStrategyFun which is exported from the config folder
 app.use(passport.initialize());
 app.use(passport.session());
-localStrategyFun(passport); // send the passport module as input to this function
+localStrategyFun(passport); // send the passport module as input to the imported authentication function based on the (local strategy)
 
-// Create a local and global var : to be used in any frontend and backend or js file along with the lifetime of the express app
+//------------------- Routes -------------------
+// all requests will be accessed here
 app.use(function (req, res, next) {
-  res.locals.user = req.user || null; // obtained the user local obj from the passport middle ware
-  global.ttt = "any Value"; // To create a global variable called ttt by use the globals object
+  console.log("--------------------------------");
+  console.log("Pre the Main middleware");
+  console.log("the req url is", req.url);
+  console.log("req.user ", req.user);
+  console.log("res.locals.user", res.locals.user);
+  // req.isAuthenticated() == true if the req.user is true
+  console.log("req.isAuthenticated()", req.isAuthenticated());
+  console.log("req.isUnauthenticated()", req.isUnauthenticated());
+  res.locals.user = req.user || null; // obtained the user obj after be logined from the passport middleware
+  console.log("ِAfter the Main middleware");
+  console.log("req.user ", req.user);
+  console.log("res.locals.user", res.locals.user);
+  console.log("req.isAuthenticated()", req.isAuthenticated());
+  console.log("req.isUnauthenticated()", req.isUnauthenticated());
+  console.log("--------------------------------");
   next();
 });
-// Or by using this route which will be executed automatically with every req
-/*app.get("*", (req, res, next) => {
-  res.locals.user = req.user || null; // obtained from the passport middle ware
-  // the variable res.locals.user is used as user only in the ejs template files and as req.user in all backend js files
-  //global.ttt = "any Value"; // another way to create a global variables
-  next();
-});*/
 
-// to use the mongoose db , and make a connection to DB server
-const url = "mongodb://localhost:27017/localDb";
-const DbURl =
-  "mongodb+srv://sakr:root@firstcluster-n7gej.mongodb.net/test?retryWrites=true&w=majority";
-mongoose.connect(url, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-// DbURl is set in the heroku configuration values
-/*
-mongoose.connect(process.env.DbURl, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-*/
-// check for the connection status with the following two events on the connection object
-db_connection = mongoose.connection;
-db_connection.once("open", () => {
-  console.log("Db is connected successfully ...");
-});
-db_connection.on("error", (err) => {
-  console.error(
-    "Error is occurred during the db connection with mess: ",
-    err.message
-  );
-});
-
-// Adjust the routes
 // Home route
 app.get("/", function (req, res) {
   res.redirect("/articles");
 });
+
 // About route
 app.get("/about", function (req, res) {
   res.render("about");
@@ -178,9 +185,14 @@ app.post(
 // Handle other routes in separated router files
 app.use("/articles", articlesRouterFile);
 app.use("/users", usersRouterFile);
+app.use((req, res, next) => {
+  res.render("badRequest");
+});
 
 // Adjust the port number to listen the incoming requests
+CurrentTime = moment().format();
 PORT = process.env.PORT || 5000;
-
 // Run the express application to listen and handle the incoming request routes
-app.listen(PORT, () => console.log(`Server begin listening on port ${PORT}`));
+app.listen(PORT, () =>
+  console.log(`Server begin listening on port ${PORT} at time: ${CurrentTime}`)
+);

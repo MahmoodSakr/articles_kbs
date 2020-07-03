@@ -115,18 +115,51 @@ router.post(
     }
     // Case B: User Authentication :: Checks for the users credentials by the passport module
     // By using the local strategy ( username and passport )
+    console.log("-------------------------------");
+    console.log("the req url is", req.url);
+    console.log("Check the authentications");
+    console.log("req.user ", req.user);
+    console.log("res.locals.user", res.locals.user);
+    console.log("req.isAuthenticated()", req.isAuthenticated());
+    console.log("req.isUnauthenticated()", req.isUnauthenticated());
+    // here the user credentials (username,password) are checked
+    // Execute the localstratgy and serialize and deserialize functions of your file passport, and based on the deserialized return, the following route will be requested either the success or the failure
     passport.authenticate("local", {
       successRedirect: "/articles/",
       failureRedirect: "/users/login",
       failureFlash: true,
     })(req, res, next);
+    /* if the user credential is correct, the successRedirect is requested and 
+  the req object will contain the logined user data object, so that req.user 
+  will be the currently logined user and then the two functions will be activated 
+  to be used with the req user where the req.isAuthenticated() and req.isUnAuthenticated()
+  Finally, req.logout() >> this function can be used to logout and make the req.user=null  
+  */
   }
 );
 
 router.get("/logout", (req, res) => {
-  res.locals.user = null;
+  // req.app.locals.user = null;
+  console.log("---------------------------");
+  console.log("pre logout fun");
+  console.log("the req url is", req.url);
+  console.log("the req path is", req.path);
+  console.log("req.user ", req.user);
+  console.log("res.locals.user", res.locals.user);
+  console.log("req.isAuthenticated()", req.isAuthenticated());
+  console.log("req.isUnauthenticated()", req.isUnauthenticated());
+
+  req.logout();
+
+  console.log("after logout fun");
+  console.log("the req url is", req.url);
+  console.log("req.user ", req.user);
+  console.log("res.locals.user", res.locals.user);
+  console.log("req.isAuthenticated()", req.isAuthenticated());
+  console.log("req.isUnauthenticated()", req.isUnauthenticated());
   req.flash("success", "You are logged out");
   res.redirect("/users/login");
+  console.log("---------------------------");
 });
 
 module.exports = router;
