@@ -29,35 +29,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 // use this public folder for the public assets usage like js, css , imgs files and handle any request to any html pages included in it
 app.use(express.static(path.join(__dirname, "public")));
-
-// to use the mongoose db , and make a connection to DB server
-const url = "mongodb://localhost:27017/localDb";
-const DbURl =
-  "mongodb+srv://sakr:root@firstcluster-n7gej.mongodb.net/test?retryWrites=true&w=majority";
-mongoose.connect(url, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-// DbURl is set in the heroku configuration values - process.env.keys ... the keys stored in the heroku system
-/*
-mongoose.connect(process.env.DbURl, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-*/
-// check for the connection status with the following two events on the connection object
-db_connection = mongoose.connection;
-db_connection.once("open", () => {
-  console.log("Db is connected successfully ...");
-});
-db_connection.on("error", (err) => {
-  console.error(
-    "Error is occurred during the db connection with mess: ",
-    err.message
-  );
-});
-
 // To enable the usage of the flash message req.flash('type',"message")
 // We use three middlewares the express session + connect flash + manual middle ware to create a message local var
 app.use(
@@ -72,30 +43,46 @@ app.use(function (req, res, next) {
   res.locals.messages = express_messages(req, res);
   next();
 });
-
 // To use the passport strategy, use the next 2 middlewares then call the localStrategyFun which is exported from the config folder
 app.use(passport.initialize());
 app.use(passport.session());
 localStrategyFun(passport); // send the passport module as input to the imported authentication function based on the (local strategy)
 
+//--------------MongoDb------------------
+function Db_connection_from_localhost() {
+  const Db_url = "mongodb://localhost:27017/localDb";
+  mongoose.connect(Db_url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+}
+function Db_connection_from_heroku() {
+  // DbURl is set in the heroku configuration values - process.env.keys ... the keys stored in the heroku system
+  // const DbURl =
+  //   "mongodb+srv://sakr:root@firstcluster-n7gej.mongodb.net/test?retryWrites=true&w=majority";
+  mongoose.connect(process.env.DbURl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+}
+Db_connection_from_localhost();
+// check for the connection status with the following two events on the connection object
+db_connection = mongoose.connection;
+db_connection.once("open", () => {
+  console.log("Db is connected successfully ...");
+});
+db_connection.on("error", (err) => {
+  console.error(
+    "Error is occurred during the db connection with mess: ",
+    err.message
+  );
+});
+
 //------------------- Routes -------------------
 // all requests will be accessed here
 app.use(function (req, res, next) {
-  console.log("--------------------------------");
-  console.log("Pre the Main middleware");
-  console.log("the req url is", req.url);
-  console.log("req.user ", req.user);
-  console.log("res.locals.user", res.locals.user);
   // req.isAuthenticated() == true if the req.user is true
-  console.log("req.isAuthenticated()", req.isAuthenticated());
-  console.log("req.isUnauthenticated()", req.isUnauthenticated());
   res.locals.user = req.user || null; // obtained the user obj after be logined from the passport middleware
-  console.log("ِAfter the Main middleware");
-  console.log("req.user ", req.user);
-  console.log("res.locals.user", res.locals.user);
-  console.log("req.isAuthenticated()", req.isAuthenticated());
-  console.log("req.isUnauthenticated()", req.isUnauthenticated());
-  console.log("--------------------------------");
   next();
 });
 
@@ -105,8 +92,8 @@ app.get("/", function (req, res) {
 });
 
 // About route
-app.get("/about", function (req, res) {
-  res.render("about");
+app.get("/contactMe", function (req, res) {
+  res.render("contactMe");
 });
 
 app.post(
@@ -186,6 +173,7 @@ app.post(
 app.use("/articles", articlesRouterFile);
 app.use("/users", usersRouterFile);
 app.use((req, res, next) => {
+  req.logOut();
   res.render("badRequest");
 });
 

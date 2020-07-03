@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <style>
+        b {
+            color: aliceblue;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/articles">Home</a>
+                </li>
+                <% if (user!=null) { %>
+                <li class="nav-item">
+                    <a class="nav-link" href="/articles/add">Add Article</a>
+                </li>
+                <% } %>
+                <li class="nav-item">
+                    <a class="nav-link" href="/contactMe">Contact-me</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+            <ul class="navbar-nav ml-auto">
+                <!-- <user is a global variable from req.user> -->
+                <% if (user!=null) { %>
+                <li class="nav-item">
+                    <a class="nav-link"> Current user : <b><%= user.username %></b> </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/users/logout">Logout</a>
+                </li>
+                <% } else { %>
+                <li class="nav-item">
+                    <a class="nav-link" href="/users/registration">Register</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/users/login">Login</a>
+                </li>
+                <% } %>
+            </ul>
+        </div>
+    </nav>
+</body>
+
+</html>

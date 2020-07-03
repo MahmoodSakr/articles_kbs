@@ -13,39 +13,8 @@
 
 <body>
 
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-        <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="/articles">Home</a>
-                </li>
-                <% if (user!=null) { %>
-                <li class="nav-item">
-                    <a class="nav-link" href="/articles/add">Add Article</a>
-                </li>
-                <% } %>
-                <li class="nav-item">
-                    <a class="nav-link" href="/about">About</a>
-                </li>
-            </ul>
-        </div>
-        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
-            <ul class="navbar-nav ml-auto">
-                <% if (user!=null) { %>
-                <li class="nav-item">
-                    <a class="nav-link" href="/users/logout">Logout</a>
-                </li>
-                <% } else { %>
-                <li class="nav-item">
-                    <a class="nav-link" href="/users/registration">Register</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/users/login">Login</a>
-                </li>
-                <% } %>
-            </ul>
-        </div>
-    </nav>
+    <%- include('./header') %>
+
 
     <!-- Call the message template -->
     <%-messages('message', locals) %>
@@ -65,7 +34,7 @@
         <% } %>
         <%  if(user==null){  %>
         <br>
-        <h4 style="color: red;">To add an article, <b>you should login firstly</b></h4>
+        <h4 style="color: red;">To add an article, <b>you should login or sign up firstly !</b></h4>
         <% } %>
 
         <hr color="#000000">

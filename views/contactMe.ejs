@@ -17,42 +17,8 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-        <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="/articles">Home</a>
-                </li>
-                <% if (user!=null) { %>
-                <li class="nav-item">
-                    <a class="nav-link" href="/articles/add">Add Article</a>
-                </li>
-                <% } %>
-                <li class="nav-item">
-                    <a class="nav-link" href="/about">About</a>
-                </li>
-            </ul>
-        </div>
 
-        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
-            <ul class="navbar-nav ml-auto">
-                <!-- <user is a global variable from req.user> -->
-                <% if (user!=null) { %>
-                <li class="nav-item">
-                    <a class="nav-link" href="/users/logout">Logout</a>
-                </li>
-                <% } else { %>
-                <li class="nav-item">
-                    <a class="nav-link" href="/users/registration">Register</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/users/login">Login</a>
-                </li>
-                <% } %>
-            </ul>
-        </div>
-    </nav>
-
+    <%- include('./header') %>
     <!-- Call the message.ejs view template and get the flash messaged to be viewed here once this file is rendered -->
     <%- messages('message', locals) %>
 
