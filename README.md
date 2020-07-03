@@ -1,4 +1,4 @@
-# Article managment Application
+# Articles Managment Application
 ## System to manage the users articles 
 
 # Technologies
