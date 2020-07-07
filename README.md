@@ -1,11 +1,11 @@
-# Article Knowledgebase Application
-## System to manage the users articles 
+# Articles Managment Application
+### System to manage the users articles build on Node.js
 
-## Technologies
-### Node.js
-### Express
-### Express Messages, Session, Connect Flash & Validation
-### MongoDB & Mongoose
-### Pug Templating
-### Passport.js Authentication
-### BCrypt Hashing
+# Technologies
+* Node.js
+* Express.js
+* Express Messages, Session, Connect Flash & Validation
+* MongoDB & Mongoose
+* EJS Template Engine
+* Passport.js Authentication
+* BCrypt Hashing
