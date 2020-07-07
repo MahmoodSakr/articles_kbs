@@ -10,3 +10,4 @@
 * EJS Template Engine
 * Passport.js Authentication
 * BCrypt Hashing
+* Nodemailer 
