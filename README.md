@@ -6,6 +6,7 @@
 * Express.js
 * Express Messages, Session, Connect Flash & Validation
 * MongoDB & Mongoose
+* Restful API
 * EJS Template Engine
 * Passport.js Authentication
 * BCrypt Hashing
