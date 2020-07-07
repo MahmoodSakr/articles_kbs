@@ -21,9 +21,8 @@ function checkArticle(req, res, next) {
 // Access control on the routes that required login firstly / to protect a route // if the user is login the route will be available to be used
 function ensureAuthenticate(req, res, next) {
   // Whether the user who request this api is authenticated/logined ot not
-  console.log("--------------------------------");
-  console.log("During the authentication function");
-  console.log("the req url is", req.url);
+
+  console.log("Authentication the req url is", req.url);
   console.log("req.user ", req.user);
   console.log("res.locals.user", res.locals.user);
   console.log("req.isAuthenticated()", req.isAuthenticated());

@@ -12,10 +12,13 @@ const { check, validationResult } = require("express-validator");
 const articlesRouterFile = require("./routes/articles");
 const usersRouterFile = require("./routes/users");
 const moment = require("moment");
-// require("dotenv").config();
+const dotenv = require("dotenv");
 
 // inti web application
 const app = express();
+
+// Environment variables
+dotenv.config();
 
 //Assign a value to a setting variables e.g.
 // load view engine
@@ -33,7 +36,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // We use three middlewares the express session + connect flash + manual middle ware to create a message local var
 app.use(
   session({
-    secret: "keyboard cat",
+    secret: process.env.secretKey,
     resave: true,
     saveUninitialized: true,
   })
@@ -49,24 +52,10 @@ app.use(passport.session());
 localStrategyFun(passport); // send the passport module as input to the imported authentication function based on the (local strategy)
 
 //--------------MongoDb------------------
-function Db_connection_from_localhost() {
-  const Db_url = "mongodb://localhost:27017/localDb";
-  mongoose.connect(Db_url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-}
-function Db_connection_from_heroku() {
-  // DbURl is set in the heroku configuration values - process.env.keys ... the keys stored in the heroku system
-  // const DbURl =
-  //   "mongodb+srv://sakr:root@firstcluster-n7gej.mongodb.net/test?retryWrites=true&w=majority";
-  mongoose.connect(process.env.DbURl, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-}
-// Db_connection_from_localhost()
-Db_connection_from_heroku();
+mongoose.connect(process.env.DbURl, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 // check for the connection status with the following two events on the connection object
 db_connection = mongoose.connection;
 db_connection.once("open", () => {
@@ -78,7 +67,6 @@ db_connection.on("error", (err) => {
     err.message
   );
 });
-
 //------------------- Routes -------------------
 // all requests will be accessed here
 app.use(function (req, res, next) {
@@ -117,25 +105,16 @@ app.post(
     // Case B : no error, so proceeding the email sending
     // Create an email transporter with its options to control all the email configurations
     var email_transporter = nodemailer.createTransport({
-      service: "gmail",
+      service: process.env.emailService,
       auth: {
-        user: "sakrservices2020@gmail.com",
-        pass: "a000000*",
+        user: process.env.emailUser,
+        pass: process.env.emailPassword,
       },
     });
-    // heroku configuration
-    /*
-     var transporter = nodemailer.createTransport({
-       service: "gmail",
-       auth: {
-         user: process.env.emailusername,
-         pass: process.env.emailpass,
-       },
-     });
-*/
+
     var mailOptions = {
-      from: "sakrservices2020@gmail.com",
-      to: "ma7mouedsakr@gmail.com",
+      from: process.env.emailFrom,
+      to: process.env.emailTo,
       subject: "Sending Email using Node.js - Article system",
       text:
         "firstname: " +
