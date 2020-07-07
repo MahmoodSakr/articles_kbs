@@ -56,6 +56,7 @@ mongoose.connect(process.env.DbURl, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
 // check for the connection status with the following two events on the connection object
 db_connection = mongoose.connection;
 db_connection.once("open", () => {
@@ -104,22 +105,21 @@ app.post(
     }
     // Case B : no error, so proceeding the email sending
     // Create an email transporter with its options to control all the email configurations
+    const authObj = { user: "sakrservices2020@gmail.com", pass: "a000000*" };
     var email_transporter = nodemailer.createTransport({
-      service: process.env.emailService,
-      auth: {
-        user: process.env.emailUser,
-        pass: process.env.emailPassword,
-      },
+      service: "gmail",
+      secure: true,
+      auth: authObj,
     });
 
     var mailOptions = {
-      from: process.env.emailFrom,
-      to: process.env.emailTo,
+      from: "sakrservices2020@gmail.com",
+      to: "ma7mouedsakr@gmail.com",
       subject: "Sending Email using Node.js - Article system",
       text:
-        "firstname: " +
+        "Firstname: " +
         req.body.fname +
-        " -- secondname: " +
+        " -- Secondname: " +
         req.body.lname +
         " -- Comment: " +
         req.body.comment,
@@ -136,7 +136,7 @@ app.post(
           "An error is occurred during sending the email, its message is : " +
             error.message
         );
-        res.redirect("/about");
+        res.redirect("/contactMe");
       } else {
         req.flash("success", "Email has been send successfully");
         console.log(
@@ -153,7 +153,6 @@ app.post(
 app.use("/articles", articlesRouterFile);
 app.use("/users", usersRouterFile);
 app.use((req, res, next) => {
-  req.logOut();
   res.render("badRequest");
 });
 
